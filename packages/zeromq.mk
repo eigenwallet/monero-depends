@@ -29,9 +29,7 @@ define $(package)_build_cmds
 endef
 
 define $(package)_stage_cmds
-  $(MAKE) -j$(NUM_CORES) DESTDIR=$($(package)_staging_dir) install-pkgconfigDATA VERBOSE=1 &&\
-  $(MAKE) -j$(NUM_CORES) DESTDIR=$($(package)_staging_dir) install-libLTLIBRARIES VERBOSE=1 &&\
-  $(MAKE) -j$(NUM_CORES) DESTDIR=$($(package)_staging_dir) install-includeHEADERS VERBOSE=1
+  $(MAKE) -j1 DESTDIR=$($(package)_staging_dir) VERBOSE=1 install-pkgconfigDATA install-libLTLIBRARIES install-includeHEADERS
 endef
 
 define $(package)_postprocess_cmds
