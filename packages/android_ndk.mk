@@ -1,8 +1,13 @@
 package=android_ndk
 $(package)_version=28c
 $(package)_download_path=https://dl.google.com/android/repository/
+ifeq ($(build_os),darwin)
+$(package)_file_name=android-ndk-r$($(package)_version)-darwin.zip
+$(package)_sha256_hash=0d4599e8bbf1a1668a0d51a541729b2246360f350018a2081d0b302dbb594f2a
+else
 $(package)_file_name=android-ndk-r$($(package)_version)-linux.zip
 $(package)_sha256_hash=dfb20d396df28ca02a8c708314b814a4d961dc9074f9a161932746f815aa552f
+endif
 
 $(package)_version_apiversion=21
 
@@ -14,7 +19,7 @@ $(package)_config_opts_i686=--arch x86
 endef
 
 define $(package)_extract_cmds
-  echo $($(package)_sha256_hash) $($(1)_source_dir)/$($(package)_file_name) | sha256sum -c &&\
+  echo "$($(package)_sha256_hash)  $($(1)_source_dir)/$($(package)_file_name)" | $(build_SHA256SUM) -c &&\
   echo "A" | unzip -q $($(1)_source_dir)/$($(package)_file_name)
 endef
 
