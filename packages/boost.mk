@@ -13,7 +13,7 @@ $(package)_config_opts_debug=variant=debug --build-dir=stage/debug
 $(package)_config_opts=--layout=system --user-config=user-config.jam
 $(package)_config_opts+=threading=multi link=static -sNO_BZIP2=1 -sNO_ZLIB=1
 $(package)_config_opts_linux=threadapi=pthread runtime-link=static
-$(package)_config_opts_android=threadapi=pthread runtime-link=static target-os=android
+$(package)_config_opts_android=threadapi=pthread runtime-link=static target-os=android toolset=gcc binary-format=elf
 $(package)_config_opts_darwin=--toolset=darwin runtime-link=static
 $(package)_config_opts_ios=--toolset=darwin-$($(package)_ios_COMPILER_VERSION)~iphone runtime-link=static
 $(package)_config_opts_iossimulator=--toolset=darwin-$($(package)_ios_COMPILER_VERSION)~iphone runtime-link=static
@@ -34,7 +34,7 @@ $(package)_toolset_mingw32=gcc
 $(package)_toolset2_$(host_os)=
 $(package)_toolset2_ios=$($(package)_ios_COMPILER_VERSION)~iphone
 $(package)_toolset2_iossimulator=$($(package)_ios_COMPILER_VERSION)~iphone
-$(package)_config_libraries=system,filesystem,thread,timer,date_time,chrono,regex,serialization,atomic,program_options,locale,log
+$(package)_b2_library_opts=--with-system --with-filesystem --with-thread --with-timer --with-date_time --with-chrono --with-regex --with-serialization --with-atomic --with-program_options --with-locale --with-log
 $(package)_cxxflags_linux=-fPIC
 $(package)_cxxflags_freebsd=-fPIC
 $(package)_cxxflags_android=-fPIC
@@ -49,13 +49,13 @@ define $(package)_preprocess_cmds
 endef
 
 define $(package)_config_cmds
-  ./bootstrap.sh --with-libraries=$(boost_config_libraries)
+  cd tools/build/src/engine && ./build.sh --cxx="$(build_CXX)" && cd ../../../.. && cp tools/build/src/engine/b2 .
 endef
 
 define $(package)_build_cmds
-  ./b2 -d2 -j$(NUM_CORES) --prefix=$($(package)_staging_prefix_dir) $($(package)_config_opts) $($(package)_config_opts_release) stage
+  ./b2 -d2 -j$(NUM_CORES) --prefix=$($(package)_staging_prefix_dir) $($(package)_config_opts) $($(package)_config_opts_release) $(boost_b2_library_opts) stage
 endef
 
 define $(package)_stage_cmds
-  ./b2 -d0 -j$(NUM_CORES) --prefix=$($(package)_staging_prefix_dir) $($(package)_config_opts) $($(package)_config_opts_release) install
+  ./b2 -d0 -j$(NUM_CORES) --prefix=$($(package)_staging_prefix_dir) $($(package)_config_opts) $($(package)_config_opts_release) $(boost_b2_library_opts) install
 endef
